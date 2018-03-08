@@ -1,0 +1,40 @@
+function set_javahome() {
+	JDK_PATH=$(find /usr/lib/jvm -maxdepth 1 -type d -name "*$1*"|sort -r|head -1)
+	if [ "$JDK_PATH" != "" ]; then
+		export JAVA_HOME="$JDK_PATH"
+		echo "Java home set to $JAVA_HOME"
+	else
+		echo "No match found for '$1' in jdk directory"
+	fi
+}
+
+function set_jdk() {
+	JDK_PATH=$(find /usr/lib/jvm -maxdepth 1 -type d -name "*$1*"|sort -r|head -1)
+	if [ "$JDK_PATH" != "" ]; then
+		cwd=$(pwd)
+		cd /usr/lib/jvm/
+		sudo rm /usr/lib/jvm/default-java
+		sudo ln -s "$JDK_PATH" /usr/lib/jvm/default-java
+		echo "Default java set to " $(ls -la /usr/lib/jvm/default-java|sed -e 's/.*\///')
+		cd "$cwd"
+		cwd=""
+	else
+		echo "No match found for '$1' in jdk directory"
+	fi
+}
+
+function set_maven() {
+	MVN_PATH=$(find /usr/share -maxdepth 1 -type d -name "*maven*" -name "*$1*" -not -name "maven-repo" | sort -r | head -1)
+	if [ "$MVN_PATH" != "" ]; then
+                cwd=$(pwd)
+                cd /usr/share
+                sudo rm /usr/bin/mvn
+                sudo ln -s "$MVN_PATH/bin/mvn" /usr/bin/mvn
+                echo "Default maven set to " $(ls -la /usr/bin/mvn|sed -e 's/.*\///')
+		echo $(mvn -version)
+                cd "$cwd"
+                cwd=""
+        else
+                echo "No match found for 'maven-$1' in /usr/share directory"
+	fi
+}

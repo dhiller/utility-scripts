@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+JIRA_ISSUE_URL="$1/rest/api/latest/issue/$2"
+
+subject=$(curl -s -u"$user_auth" \
+        "$JIRA_ISSUE_URL"|\
+        grep -o -P '"summary":"(.*?)",'|head -1|\
+        sed 's/"summary":"//g'|sed 's/[\]//g'i|sed 's/",$//g')
+if [ "$subject" == "" ];
+then
+    subject="Unknown issue id"
+fi
+p_status=$(curl -s -u"$user_auth" \
+        "$JIRA_ISSUE_URL"|\
+        grep -o -P '"status".*?"name":"(.*?)",'|tail -1|\
+        grep -o -P '"name":"(.*?)",'|\
+        sed 's/"name":"//g'|sed 's/[\]//g'i|sed 's/",$//g')
+if [ "$p_status" == "" ];
+then
+    p_status="?"
+fi
+
+printf '[%s] %s: %s\n' "$p_status" "$issue" "$subject"

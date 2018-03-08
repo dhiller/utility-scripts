@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cwd=$(pwd)
+for dir in $(find . -type d -name ".git");
+do
+    cd "$cwd/${dir%/.git}"
+    uncommitted_changes=$(git status --porcelain|wc -l)
+    [ "$uncommitted_changes" != "0" ] && echo "$(pwd): $uncommitted_changes uncommited files"
+done
+cd "$cwd"
