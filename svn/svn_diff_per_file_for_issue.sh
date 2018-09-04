@@ -5,6 +5,17 @@ function usage() {
   echo "Usage: ${0##*/} <commit-message-search-string> [<svn-options>...]"
 }
 
+set +e
+svn info > /dev/null
+result=$?
+set -e
+
+if [ $result -ne 0 ]; then
+  usage
+  echo "$(pwd) is not an svn dir?"
+  exit 1
+fi
+
 if [ "$#" -lt 1 ] || [ "$1" == "" ]; then
   usage
   exit 1
@@ -50,27 +61,4 @@ if [ $(cat $tmp_files_not_found | wc -l) -ne 0 ]; then
 fi
 [ -f $tmp_files_not_found ] && rm -f $tmp_files_not_found
 
-# display files
-should_exit=0
-while [ $should_exit -ne 1 ]; do
-  for diff_file in $(cat $tmp_diff_files); do
-    should_exit=1
-    echo "Display diff file $diff_file? [Y]es / [n]o / [r]estart / e[x]it"
-    read input </dev/tty
-    case $input in
-      n)
-        ;;
-      r)
-        should_exit=0
-        break
-        ;;
-      x)
-        exit 0
-        ;;
-      *)
-        cat $diff_file | colordiff | less -r
-        ;;
-    esac
-  done
-done
-
+$SCRIPTPATH/svn_display_diffs.sh $tmp_diff_files
