@@ -33,6 +33,13 @@ fi
 rev_nos=$(svn_find_rev_nos_for_issue ${@:-.})
 tmp_files_not_found=$(mktemp files_not_found.XXXXXX --tmpdir)
 tmp_diff_files=$(mktemp files_diffed.XXXXXX --tmpdir)
+deleted_files="$(svn_files_deleted_for_issue ${@:-.})"
+if [ ! -z "$deleted_files" ]; then
+  echo "Deleted files:"
+  for file in "$(echo $deleted_files)"; do
+    echo "$file"
+  done
+fi
 echo -n "Creating diffs "
 for file in $(svn_files_changed_for_issue ${@:-.}); do
   file_not_found=$file
