@@ -10,13 +10,13 @@ function display_diff_files_numbered {
 	        exit 1
 	fi
 	diff_files="$1"
-        index=0
-        echo "Files stored in $diff_files:"
-        for diff_file in $(cat $diff_files); do
-                ((index++))
-                printf '%3s: %s' "$index" "$diff_file"
-                echo
-        done
+	index=0
+	echo "Files stored in $diff_files:"
+	for diff_file in $(cat $diff_files); do
+			((index++))
+			printf '%3s: %s' "$index" "$diff_file"
+			echo
+	done
 }
 
 if [ ! -f $1 ]; then
@@ -25,11 +25,17 @@ if [ ! -f $1 ]; then
 fi
 
 diff_files="$1"
-file_index_default=1
 # display files
 number_of_files=$(cat $diff_files | wc -l)
+
+if [ "$number_of_files" -eq 0 ]; then
+	echo "No files to display!"
+	exit 1
+fi
+
 display_diff_files_numbered "$diff_files"
 
+file_index_default=1
 while true; do
 	echo "Which diff file to display [$file_index_default] (e[x]it/[d]isplay file list)? "
 	read input </dev/tty

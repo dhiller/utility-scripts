@@ -1,5 +1,5 @@
 function svn_files_changed_for_issue {
-  local result=$(svn log -v --search ${@:-.} | grep -E '^\s+[AMR]\s' | sed -E 's/^\s+[A-Z]\s//g' | sort | uniq | grep -E '\.[a-z]+$')  
+  local result=$(svn log -v --search ${@:-.} | grep -E '^\s+[AMR]\s' | sed -E 's/^\s+[A-Z]\s//g' | sed -E 's/\s.*$//g' | sort | uniq | grep -E '\.[a-z]+$')  
   echo $result
 }
 
