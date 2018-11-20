@@ -34,10 +34,11 @@ if [ "$number_of_files" -eq 0 ]; then
 fi
 
 display_diff_files_numbered "$diff_files"
+IFS=$'\r\n' GLOBIGNORE='*' command eval 'file_names=($(cat "$diff_files"))'
 
 file_index_default=1
 while true; do
-	echo "Which diff file to display [$file_index_default] (e[x]it/[d]isplay file list)? "
+	echo "Which diff file to display [$file_index_default (${file_names[(($file_index_default-1))]})] (e[x]it/[d]isplay file list)? "
 	read input </dev/tty
 	case $input in
 		x)
