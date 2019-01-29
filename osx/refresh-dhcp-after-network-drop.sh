@@ -1,31 +1,51 @@
 #!/bin/bash
 
-trap "{ exit 0; }" SIGINT SIGTERM
+function announce_sleep {
+  local duration_seconds="$1"; shift
+  echo "sleeping for $duration_seconds seconds"
+  sleep $duration_seconds
+}
 
-while true; do
+function ping_dns {
   set +e
   ping -t 1 -c 1 -A --apple-time 8.8.8.8 > /dev/null
   result="$?"
   set -e
+  echo $result
+}
+
+trap "{ exit 0; }" SIGINT SIGTERM
+
+while true; do
+  result=$(ping_dns)
   if [ $result -ne 0 ]; then
-    echo "disabling network interface"
+    echo "ping failed, assuming network connection down."
+    echo "disabling network interface..."
     networksetup -setnetworkserviceenabled Wi-Fi off
-    echo "ping failed, renewing dhcp lease"
+    echo "renewing dhcp lease..."
     sudo ipconfig set en0 DHCP
-    sleep 3
-    echo "reenabling network interface"
+    announce_sleep 3
+    echo "reenabling network interface..."
     networksetup -setnetworkserviceenabled Wi-Fi on
-    sleep 20
-    while true; do
+    announce_sleep 5
+    retries=5
+    while [ $retries -gt 0 ]; do
       echo "checking network packet"
       set +e
       ipconfig getpacket en0 > /dev/null
       result="$?"
       set -e
-      [ $result -ne 0 ] || break
-      sleep 1
+      if [ $result -eq 0 ]; then
+        result=$(ping_dns)
+        echo "pinging dns"
+        if [ $result -eq 0 ]; then
+          echo "success!"
+          break
+        fi
+      fi
+      announce_sleep 3
+      ((retries--))
     done
-    sleep 3
   else
     sleep 3
   fi
