@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+set -o posix 
+
+RANDOM=$$$(date +%s)
+items=($(cowsay -l | grep -Ev 'telebears' | tail -n +2))
+character=$(echo ${items[$RANDOM % ${#items[@]}]})
+fortune -s | cowsay -f $character | lolcat
