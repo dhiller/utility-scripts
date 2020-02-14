@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Create a prepare-commit-msg hook to add a signoff to commit message
-# see https://stackoverflow.com/a/46536244/16193 
+# Create a pre-commit hook to execute shellcheck prior to committing 
 
 git status --porcelain
 if [ $? -ne 0 ]; then
@@ -21,25 +20,25 @@ if [ -f "$git_hook_filename" ]; then
 fi
 
 cat > "$git_hook_filename" <<EOF
-#!/usr/bin/sh                                                    
-                                                                 
-if [ ! -z "$SHELLCHECK_PRE_COMMIT_HOOK_DISABLED" ] && [ "$SHELLCHECK_PRE_COMMIT_HOOK_DISABLED" -eq 1 ]; then
+#!/usr/bin/sh
+
+if [ ! -z "\$SHELLCHECK_PRE_COMMIT_HOOK_DISABLED" ] && [ "\$SHELLCHECK_PRE_COMMIT_HOOK_DISABLED" -eq 1 ]; then
     echo "Skipping shellcheck..."
     exit 0
 fi
-result=0                                                         
-shellcheck_log=$(mktemp)                                         
-for file in $(git diff --cached --name-only | grep -E '.sh$'); do
-    shellcheck -S warning $file >> $shellcheck_log               
-    if [[ $? -ne 0 ]]; then                                      
-        result=1                                                 
-    fi                                                           
-done                                                             
-if [[ $result -ne 0 ]]; then                                     
-    echo "shellcheck failed!"                                    
-    cat $shellcheck_log                                          
-fi                                                               
-exit $result                                                     
+result=0
+shellcheck_log=\$(mktemp)
+for file in \$(git diff --cached --name-only | grep -E '.sh$'); do
+    shellcheck -S warning \$file >> \$shellcheck_log
+    if [[ \$? -ne 0 ]]; then
+        result=1
+    fi
+done
+if [[ \$result -ne 0 ]]; then
+    echo "shellcheck failed!"
+    cat \$shellcheck_log
+fi
+exit \$result
 EOF
 
 chmod +x "$git_hook_filename"

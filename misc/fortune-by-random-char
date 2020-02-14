@@ -2,7 +2,16 @@
 set -euo pipefail
 set -o posix 
 
-RANDOM=$$$(date +%s)
-items=($(cowsay -l | grep -Ev 'telebears' | tail -n +2))
-character=$(echo ${items[$RANDOM % ${#items[@]}]})
+character=""
+if [ $# -gt 0 ]; then
+    if [ -f "$1" ]; then
+        character="$1"
+    fi
+fi
+if [ -z "$character" ]; then
+    RANDOM=$$$(date +%s)
+    items=($(cowsay -l | grep -Ev 'telebears' | tail -n +2))
+    character=$(echo ${items[$RANDOM % ${#items[@]}]})
+fi
+
 fortune -s | cowsay -f $character | lolcat
