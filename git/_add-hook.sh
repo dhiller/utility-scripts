@@ -12,7 +12,6 @@ usage: $0 name-of-hook target-script
     git hook rules. See `git help hooks` for details.
 
     requirements:
-        - hook must not exist
         - user must be in root of git directory
         - target (one of $(ls $SCRIPT_DIR/hooks/)) must exist
     
@@ -26,13 +25,6 @@ fi
 
 if [ ! -d ".git" ]; then
     usage
-    exit 1
-fi
-
-git_hook_filename=$1
-if [ -f "$git_hook_filename" ]; then
-    usage
-    echo "File $git_hook_filename already exists!"
     exit 1
 fi
 
@@ -56,5 +48,10 @@ if [ ! -d ".git" ]; then
     exit 1
 fi
 
+git_hook_filename="$(pwd)/.git/hooks/$1"
+if [ ! -f "$git_hook_filename" ]; then
+    touch ${git_hook_filename}
+    chmod +x ${git_hook_filename}
+fi
 
-(cd .git/hooks && ln -s ${target_script} ${git_hook_filename}) || exit 1
+echo "sh -c ${target_script}" >> ${git_hook_filename}

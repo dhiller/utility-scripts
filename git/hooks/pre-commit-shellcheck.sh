@@ -4,6 +4,12 @@ if [ ! -z "$SHELLCHECK_PRE_COMMIT_HOOK_DISABLED" ] && [ "$SHELLCHECK_PRE_COMMIT_
     echo "Skipping shellcheck..."
     exit 0
 fi
+
+if ! command -V shellcheck; then
+    echo "shellcheck was not found! See https://github.com/koalaman/shellcheck for more info!"
+    exit 1
+fi
+
 result=0
 shellcheck_log=$(mktemp)
 for file in $(git diff --cached --name-only | grep -E '.sh$'); do
