@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+echo 'Use env SHFMT_PRE_COMMIT_HOOK_DISABLED to enable (1) or disable (0) this hook'
+
 if [ ! -z "$SHFMT_PRE_COMMIT_HOOK_DISABLED" ] && [ "$SHFMT_PRE_COMMIT_HOOK_DISABLED" -eq 1 ]; then
     echo "Skipping shfmt..."
     exit 0
