@@ -6,4 +6,4 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname $0)" && pwd)
 
-$SCRIPT_DIR/_add-hook.sh pre-commit pre-commit-shfmt.sh
+$SCRIPT_DIR/_add-hook.sh pre-commit pre-commit-shfmt.sh ' || exit'
