@@ -6,7 +6,7 @@ SCRIPT_DIR=$(cd "$(dirname $0)" && pwd)
 
 function usage() {
     cat <<EOF
-usage: $0 name-of-hook target-script append-after-call
+usage: $0 name-of-hook target-script append-inside-call append-after-call
 
     create a symlink to a hook script that will be executed according to
     git hook rules. See
@@ -22,7 +22,7 @@ usage: $0 name-of-hook target-script append-after-call
 EOF
 }
 
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
     usage
     exit 1
 fi
@@ -39,7 +39,8 @@ if [ ! -f $target_script ]; then
     exit 1
 fi
 
-append_after_call=$3
+append_inside_call=$3
+append_after_call=$4
 
 git status --porcelain
 if [ $? -ne 0 ]; then
@@ -60,4 +61,4 @@ if [ ! -f "$git_hook_filename" ]; then
     chmod +x ${git_hook_filename}
 fi
 
-echo 'sh -c "'"${target_script}"' '"${append_after_call}"'"' >>${git_hook_filename}
+echo 'sh -c "'"${target_script}"' '"${append_inside_call}"'" '"${append_after_call}" >>${git_hook_filename}

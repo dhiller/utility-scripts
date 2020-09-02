@@ -7,4 +7,4 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname $0)" && pwd)
 
-$SCRIPT_DIR/_add-hook.sh prepare-commit-msg prepare-commit-signoff.sh ' $@'
+$SCRIPT_DIR/_add-hook.sh prepare-commit-msg prepare-commit-signoff.sh '$@' ''
