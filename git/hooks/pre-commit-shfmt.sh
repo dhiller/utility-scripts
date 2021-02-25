@@ -15,7 +15,10 @@ fi
 result=0
 shfmt_log=$(mktemp)
 for file in $(git diff --cached --name-only | grep -E '.sh$'); do
-    shfmt -i 4 -d $file >> $shfmt_log
+    if [ ! -f $file ]; then
+        continue
+    fi
+    shfmt -i 4 -d $file >>$shfmt_log
     if [ $? -ne 0 ]; then
         result=1
     fi

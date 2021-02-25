@@ -15,7 +15,10 @@ fi
 result=0
 shellcheck_log=$(mktemp)
 for file in $(git diff --cached --name-only | grep -E '.sh$'); do
-    shellcheck -S warning $file >> $shellcheck_log
+    if [ ! -f $file ]; then
+        continue
+    fi
+    shellcheck -S warning $file >>$shellcheck_log
     if [ $? -ne 0 ]; then
         result=1
     fi
